@@ -1,0 +1,882 @@
+{
+  "name": "Agentic Social Media Video",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "create-video",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ae67d0fe-580b-4e07-9545-b46632cf5661",
+      "name": "Webhook",
+      "webhookId": "576e7117-4d2d-447c-8c36-4d780e7ec8dc"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8a9b0080-90ce-4f8d-8cae-80679255d688",
+              "name": "user_prompt",
+              "value": "={{ $json.body.topic }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "59f8af00-5308-4308-89b7-c977c11e4221",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "model": "=llama3.2",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        320,
+        208
+      ],
+      "id": "fc248653-5157-41bd-a88c-09f5cb210a43",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "aWqW0gqhyNvwYIE6",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.output || $input.first().json.text || '';\nconst userPrompt = $('Edit Fields').first().json.user_prompt;\n\nconst start = raw.indexOf('{');\nconst end = raw.lastIndexOf('}');\nif (start === -1 || end === -1) {\n  throw new Error('Planning Agent did not return JSON. Raw output: ' + raw);\n}\n\nlet plan;\ntry {\n  plan = JSON.parse(raw.slice(start, end + 1));\n} catch (e) {\n  throw new Error('Invalid JSON from Planning Agent: ' + raw);\n}\n\nplan.duration = Number(plan.duration) || 60;\nplan.platform = plan.platform || 'Instagram Reels';\nplan.topic = plan.topic || userPrompt;\n\nreturn [{ json: { user_prompt: userPrompt, plan } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        0
+      ],
+      "id": "c5c2961d-7e23-4ebf-a816-adddf6e5cc24",
+      "name": "Parse Planning"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional short-form social media video script writer.\n\nWrite a complete narration script from this content plan.\n\nRequirements:\n- Start with a powerful hook.\n- Use simple, spoken language.\n- Keep it to about {{ Math.round($json.plan.duration * 2.5) }} words (this is a {{ $json.plan.duration }}-second video).\n- Include useful information.\n- End with a strong conclusion and a call to action.\n- Separate ideas with blank lines.\n\nContent Plan:\n{{ JSON.stringify($json.plan) }}\n\nReturn ONLY the narration text. No titles, no stage directions, no emojis, no markdown.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "36c44e4a-6100-414a-9fe7-a58adaafc3cf",
+      "name": "Script Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        912,
+        208
+      ],
+      "id": "33447fe5-8506-4f11-9dcd-6ad712cc6c3b",
+      "name": "Ollama Chat Model1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "aWqW0gqhyNvwYIE6",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ab2f7a83-549d-4295-b741-6baf5da6da4d",
+              "name": "topic",
+              "value": "={{ $('Parse Planning').first().json.plan.topic }}",
+              "type": "string"
+            },
+            {
+              "id": "d5b18441-0f3d-42aa-afc4-d306583d4ed7",
+              "name": "plan",
+              "value": "={{ $('Parse Planning').first().json.plan }}",
+              "type": "object"
+            },
+            {
+              "id": "551866fc-b8fd-43f7-9111-9f13d65a966e",
+              "name": "script",
+              "value": "={{ ($json.output || $json.text).trim() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1408,
+        0
+      ],
+      "id": "ea3d82c5-7929-4aef-a762-6ca457797249",
+      "name": "Save Script"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI Social Media Content Planning Agent.\n\nAnalyze the user's request and create a complete video plan.\n\nIf information is missing, make intelligent decisions automatically.\n\nReturn ONLY valid JSON with exactly these keys:\ntopic, target_audience, platform, duration, tone, style, main_message, hook_strategy\n\n\"duration\" must be a number of seconds.\nDo not use markdown. Do not add any explanation.\n\nUser Request:\n{{ $json.user_prompt }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "6380f8f2-b618-4a42-b159-4e101d816bb4",
+      "name": "Planning Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional video director.\n\nDivide the following video script into scenes for a {{ $json.plan.duration }}-second vertical social media video.\n\nFor each scene provide:\n- scene_number\n- narration (the exact words spoken in this scene, copied from the script)\n- visual_description (what the viewer sees)\n- search_keywords (2 to 4 simple words for a stock photo search, e.g. \"student laptop classroom\")\n- duration_seconds (a number)\n\nRules:\n- Use between 6 and 10 scenes.\n- Every sentence of the script must appear in exactly one scene. Do not rewrite or drop any narration.\n- The duration_seconds values must add up to about {{ $json.plan.duration }}.\n- Keywords must describe real photographable things, not abstract ideas.\n\nReturn ONLY valid JSON in this format. No markdown, no explanation:\n\n{\n  \"scenes\": [\n    {\n      \"scene_number\": 1,\n      \"narration\": \"\",\n      \"visual_description\": \"\",\n      \"search_keywords\": \"\",\n      \"duration_seconds\": 5\n    }\n  ]\n}\n\nSCRIPT:\n{{ $json.script }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1632,
+        0
+      ],
+      "id": "9978952f-7f38-4f90-9ec3-e126dee3e0fd",
+      "name": "Scene Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        1504,
+        208
+      ],
+      "id": "604726ce-17d7-4f6d-b79b-40883048198a",
+      "name": "Ollama Chat Model2",
+      "credentials": {
+        "ollamaApi": {
+          "id": "aWqW0gqhyNvwYIE6",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.output || $input.first().json.text || '';\nconst saved = $('Save Script').first().json;\n\nconst start = raw.indexOf('{');\nconst end = raw.lastIndexOf('}');\nif (start === -1 || end === -1) {\n  throw new Error('Scene Agent did not return JSON. Raw output: ' + raw);\n}\n\nlet data;\ntry {\n  data = JSON.parse(raw.slice(start, end + 1));\n} catch (e) {\n  throw new Error('Invalid JSON from Scene Agent: ' + raw);\n}\n\nif (!Array.isArray(data.scenes) || data.scenes.length === 0) {\n  throw new Error('No scenes found. Raw output: ' + raw);\n}\n\nconst targetDuration = saved.plan.duration || 60;\n\nlet scenes = data.scenes.map((s, i) => ({\n  scene_number: Number(s.scene_number) || i + 1,\n  narration: String(s.narration || '').trim(),\n  visual_description: String(s.visual_description || '').trim(),\n  search_keywords: String(s.search_keywords || saved.topic).trim(),\n  duration_seconds: Number(s.duration_seconds) || 6,\n}));\n\n// Rescale durations so the total matches the requested length\nconst total = scenes.reduce((sum, s) => sum + s.duration_seconds, 0);\nconst factor = targetDuration / total;\nscenes = scenes.map(s => ({\n  ...s,\n  duration_seconds: Math.max(2, Math.round(s.duration_seconds * factor * 10) / 10),\n}));\n\n// Zero-padded file names for later steps (scene_01.jpg)\nreturn scenes.map(s => ({\n  json: {\n    ...s,\n    scene_id: String(s.scene_number).padStart(2, '0'),\n    topic: saved.topic,\n    total_scenes: scenes.length,\n    full_script: saved.script,\n  },\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        0
+      ],
+      "id": "a5fa653c-b183-451a-bc9d-de59c2440f62",
+      "name": "Split Scene"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2224,
+        -32
+      ],
+      "id": "2b556c64-92c7-44d1-93c6-b0d81f214aa7",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a stock-photo search query for this scene.\n\nNarration: {{ $json.narration }}\nVisual description: {{ $json.visual_description }}\nKeywords: {{ $json.search_keywords }}\n\nRules: use 1 to 3 simple words about something photographable.\nReturn ONLY the search query. No quotes, no explanation.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2448,
+        -96
+      ],
+      "id": "cced2bc1-829f-434c-b962-90943b9c25eb",
+      "name": "Visual Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        2288,
+        112
+      ],
+      "id": "4cdc424f-fc2a-44e3-8edc-b114ae9312ba",
+      "name": "Ollama Chat Model3",
+      "credentials": {
+        "ollamaApi": {
+          "id": "aWqW0gqhyNvwYIE6",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const sceneNow = $('Loop Over Items').item.json;\nconst alreadyHave = ['01','02','03','04','05','06','07','08'];\nif (alreadyHave.includes(String(sceneNow.scene_id))) {\n  return { json: { ...sceneNow, image_url: null, file_path: `/home/node/.n8n-files/visuals/scene_${sceneNow.scene_id}.jpg`, skip: true } };\n}\nconst API_KEY = '*';\n\nconst scene = $('Loop Over Items').item.json;\nconst clean = s => String(s || '')\n  .replace(/[\"'`.,!?:;()]/g, ' ')\n  .replace(/\\s+/g, ' ')\n  .trim();\n\nconst agentQuery = clean($json.output);\nconst words = agentQuery.split(' ').filter(Boolean);\nconst kwRaw = Array.isArray(scene.search_keywords)\n  ? scene.search_keywords.join(' ')\n  : scene.search_keywords;\nconst kwWords = clean(kwRaw).split(' ').filter(Boolean);\n\n// Try the most specific query first, then simpler and simpler ones\nconst candidates = [...new Set([\n  agentQuery,\n  words.slice(0, 2).join(' '),\n  words[0],\n  kwWords.slice(0, 2).join(' '),\n  kwWords[0],\n  'students learning',\n  'technology',\n])].filter(Boolean);\n\nlet chosen = null;\nlet usedQuery = '';\n\nfor (const q of candidates) {\n  const res = await this.helpers.httpRequest({\n    method: 'GET',\n    url: 'https://pixabay.com/api/',\n    qs: {\n      key: API_KEY,\n      q,\n      image_type: 'photo',\n      safesearch: 'true',\n      per_page: 20,\n    },\n    json: true,\n  });\n  const hits = res.hits || [];\n  if (hits.length) {\n    // prefer a portrait photo (good for 9:16), otherwise take the first\n    chosen = hits.find(h => h.imageHeight > h.imageWidth) || hits[0];\n    usedQuery = q;\n    break;\n  }\n}\n\nif (!chosen) {\n  throw new Error(`No Pixabay results for scene ${scene.scene_number}. Tried: ${candidates.join(' | ')}`);\n}\n\nreturn {\n  json: {\n    ...scene,\n    visual_query: usedQuery,\n    image_url: chosen.largeImageURL,\n       file_path: `/home/node/.n8n-files/visuals/scene_${scene.scene_id}.jpg`,\n  },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3232,
+        -272
+      ],
+      "id": "9ff949d2-4792-4590-a50a-3f92d660c05a",
+      "name": "Pick Photo"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.image_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+            },
+            {
+              "name": "Referer",
+              "value": "https://pixabay.com/"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 5000
+            }
+          },
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        3488,
+        -256
+      ],
+      "id": "82402c87-5e04-4b87-b9a6-c819a0457e40",
+      "name": "Download Visual",
+      "retryOnFail": false,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "={{ $('Pick Photo').item.json.file_path }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        3664,
+        -272
+      ],
+      "id": "24d54352-03e7-4f2b-9226-d44879e2f6a5",
+      "name": "Save Visual",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return { json: { ...$('Pick Photo').item.json } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4544,
+        288
+      ],
+      "id": "bf748a5b-8f67-4981-b7cf-639369e04b77",
+      "name": "Collect Result"
+    },
+    {
+      "parameters": {
+        "amount": 8
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3904,
+        -416
+      ],
+      "id": "e8b50bc4-0358-434e-80d0-3f1c54fb2842",
+      "name": "Wait",
+      "webhookId": "6b5d098e-d544-4c94-977a-a1f9e58e2afb"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://media:8000/tts",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ text: $json.voiceover_text, output_path: \"/output/audio/voiceover.wav\" }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2512,
+        288
+      ],
+      "id": "51c631e0-4433-420d-9670-b81dcca3cdf7",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a quality-control reviewer for a short Instagram Reel.\n\nVoiceover script:\n{{ $('Build Voiceover Text').first().json.voiceover_text }}\n\nCheck these rules:\n1. The script is about education and AI.\n2. The first sentence works as a hook.\n3. It is between 60 and 200 words.\n4. It has no offensive or misleading claims.\n\nReturn ONLY valid JSON, no extra text:\n{\"status\": \"PASS\", \"reasons\": [\"short reason\"]}\nUse \"FAIL\" instead of \"PASS\" if a rule is broken.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3056,
+        112
+      ],
+      "id": "48bd4d65-0dbb-4bf5-ab30-897523ef17cf",
+      "name": "QC Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        3280,
+        160
+      ],
+      "id": "c99f6dcc-96d3-4c06-9a40-4a2b595c8ad6",
+      "name": "Ollama Chat Model4",
+      "credentials": {
+        "ollamaApi": {
+          "id": "aWqW0gqhyNvwYIE6",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = String($input.first().json.output || '');\nconst match = raw.match(/\\{[\\s\\S]*\\}/);\nlet qc = { status: 'FAIL', reasons: ['Could not read QC answer'] };\ntry { if (match) qc = JSON.parse(match[0]); } catch (e) {}\nconst status = String(qc.status || '').toUpperCase() === 'PASS' ? 'PASS' : 'FAIL';\nreturn [{ json: {\n  voiceover_text: $('Build Voiceover Text').first().json.voiceover_text,\n  qc_status: status,\n  qc_reasons: qc.reasons || []\n}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3392,
+        112
+      ],
+      "id": "86819f98-8f94-4eb2-a6e3-0e6b2a6e6f40",
+      "name": "Parse QC"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create social media metadata for this Reel script.\n\nScript:\n{{ $json.voiceover_text }}\n\nReturn ONLY valid JSON, no extra text:\n{\"title\": \"max 70 characters, catchy\", \"description\": \"max 200 characters\", \"hashtags\": [\"#tag1\", \"#tag2\", \"#tag3\", \"#tag4\", \"#tag5\"]}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3616,
+        112
+      ],
+      "id": "938226b4-e041-458d-b922-5df0561fcca6",
+      "name": "SEO Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        3488,
+        320
+      ],
+      "id": "43badb75-89ff-48c8-a892-a45f83a030cc",
+      "name": "Ollama Chat Model5",
+      "credentials": {
+        "ollamaApi": {
+          "id": "aWqW0gqhyNvwYIE6",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = String($input.first().json.output || '');\nconst match = raw.match(/\\{[\\s\\S]*\\}/);\nlet seo = { title: 'Untitled', description: '', hashtags: [] };\ntry { if (match) seo = JSON.parse(match[0]); } catch (e) {}\nreturn [{ json: {\n  qc_status: $('Parse QC').first().json.qc_status,\n  qc_reasons: $('Parse QC').first().json.qc_reasons,\n  title: seo.title,\n  description: seo.description,\n  hashtags: seo.hashtags\n}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3984,
+        112
+      ],
+      "id": "01b2db64-bc0d-4854-ab5a-8a8fa59db58f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $input.all()\n  .map(i => String(i.json.narration || '').trim())\n  .filter(Boolean)\n  .join(' ');\n\nreturn [{ json: { voiceover_text: text, scene_count: $input.all().length } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2464,
+        96
+      ],
+      "id": "509dde9b-2284-472c-9381-f43b2cb9d0db",
+      "name": "Build Voiceover Text"
+    },
+    {
+      "parameters": {
+        "jsCode": "const script = $('Build Voiceover Text').first().json.voiceover_text;\n\nconst ask = async (prompt) => {\n  const r = await this.helpers.httpRequest({\n    method: 'POST',\n    url: 'http://ollama:11434/api/generate',\n    body: { model: 'llama3.2', prompt, stream: false, format: 'json', options: { temperature: 0.2 } },\n    json: true,\n    timeout: 300000,\n  });\n  return JSON.parse(r.response);\n};\n\nlet qc = { status: 'FAIL', reasons: ['QC call failed'] };\nlet seo = { title: '', description: '', hashtags: [] };\nlet error = null;\n\ntry {\n  qc = await ask(`You are a quality-control reviewer for a short Instagram Reel script.\nScript: ${script}\nRules: it is about AI in education, has a clear hook in the first sentence, is 60 to 200 words, and has no misleading claims.\nReturn JSON only: {\"status\": \"PASS\" or \"FAIL\", \"reasons\": [\"short reason\"]}`);\n\n  seo = await ask(`Create social media metadata for this Reel script.\nScript: ${script}\nReturn JSON only: {\"title\": \"max 70 characters\", \"description\": \"max 200 characters\", \"hashtags\": [\"#a\",\"#b\",\"#c\",\"#d\",\"#e\"]}`);\n} catch (e) {\n  error = String(e.message || e);\n}\n\nreturn [{ json: {\n  qc_status: String(qc.status || '').toUpperCase() === 'PASS' ? 'PASS' : 'FAIL',\n  qc_reasons: qc.reasons || [],\n  title: seo.title,\n  description: seo.description,\n  hashtags: seo.hashtags,\n  error,\n}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2928,
+        0
+      ],
+      "id": "2f9fd104-7966-4055-966d-8eed11123544",
+      "name": "QC and SEO"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://media:8000/captions",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2720,
+        320
+      ],
+      "id": "dc4c8c9d-6f0c-4c51-9d84-9d681291a642",
+      "name": "Make Captions"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://media:8000/render",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2976,
+        256
+      ],
+      "id": "e1bf1754-a8ac-4741-ad59-53129d7d0813",
+      "name": "Render Video"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Planning Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Planning Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Planning": {
+      "main": [
+        [
+          {
+            "node": "Script Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Script Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Script Agent": {
+      "main": [
+        [
+          {
+            "node": "Save Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Planning Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse Planning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Script": {
+      "main": [
+        [
+          {
+            "node": "Scene Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Scene Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scene Agent": {
+      "main": [
+        [
+          {
+            "node": "Split Scene",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Scene": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Build Voiceover Text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Visual Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Visual Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Visual Agent": {
+      "main": [
+        [
+          {
+            "node": "Pick Photo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick Photo": {
+      "main": [
+        [
+          {
+            "node": "Download Visual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Visual": {
+      "main": [
+        [
+          {
+            "node": "Save Visual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Visual": {
+      "main": [
+        [
+          {
+            "node": "Collect Result",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect Result": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Make Captions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "QC Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "QC Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse QC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse QC": {
+      "main": [
+        [
+          {
+            "node": "SEO Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "SEO Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SEO Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Voiceover Text": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "QC and SEO": {
+      "main": [
+        [
+          {
+            "node": "QC Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make Captions": {
+      "main": [
+        [
+          {
+            "node": "Render Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Render Video": {
+      "main": [
+        [
+          {
+            "node": "QC and SEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a6f33dbd-e9d9-4344-a1db-bd8ae1246b71",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "69116055510381ee60bae150dc26308aaa65f030ea752f0dd8aadd53fe37d607"
+  },
+  "nodeGroups": [],
+  "id": "pm2HbxdodHrAk3bk",
+  "tags": []
+}

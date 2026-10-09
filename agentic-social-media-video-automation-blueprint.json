@@ -1,0 +1,934 @@
+{
+  "name": "Agentic AI Social Media Video Automation - Manual Blueprint",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "social-video",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "agentic-social-01",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "notes": "Receives JSON such as {\"topic\":\"Create a 60-second Instagram Reel about Artificial Intelligence in Education\"}."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Edit Fields\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-02",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        0
+      ],
+      "notes": "Project manual node 2: Edit Fields. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Planning Agent - Ollama\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-03",
+      "name": "Planning Agent - Ollama",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        0
+      ],
+      "notes": "Project manual node 3: Planning Agent - Ollama. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Code - Parse Planning JSON\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-04",
+      "name": "Code - Parse Planning JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        0
+      ],
+      "notes": "Project manual node 4: Code - Parse Planning JSON. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Script Agent - Ollama\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-05",
+      "name": "Script Agent - Ollama",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1300,
+        0
+      ],
+      "notes": "Project manual node 5: Script Agent - Ollama. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Edit Fields - Save Script\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-06",
+      "name": "Edit Fields - Save Script",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        0
+      ],
+      "notes": "Project manual node 6: Edit Fields - Save Script. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Scene Agent - Ollama\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-07",
+      "name": "Scene Agent - Ollama",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1820,
+        0
+      ],
+      "notes": "Project manual node 7: Scene Agent - Ollama. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Code - Split Scenes\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-08",
+      "name": "Code - Split Scenes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2080,
+        0
+      ],
+      "notes": "Project manual node 8: Code - Split Scenes. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop Over Items\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-09",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2340,
+        0
+      ],
+      "notes": "Project manual node 9: Loop Over Items. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Visual Agent - Ollama\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-10",
+      "name": "Visual Agent - Ollama",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2600,
+        0
+      ],
+      "notes": "Project manual node 10: Visual Agent - Ollama. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// HTTP Request - Get Visual\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-11",
+      "name": "HTTP Request - Get Visual",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2860,
+        0
+      ],
+      "notes": "Project manual node 11: HTTP Request - Get Visual. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Download / Save Visual\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-12",
+      "name": "Download / Save Visual",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3120,
+        0
+      ],
+      "notes": "Project manual node 12: Download / Save Visual. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare Complete Script\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-13",
+      "name": "Prepare Complete Script",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3380,
+        0
+      ],
+      "notes": "Project manual node 13: Prepare Complete Script. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Text-to-Speech\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-14",
+      "name": "Text-to-Speech",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3640,
+        0
+      ],
+      "notes": "Project manual node 14: Text-to-Speech. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Save Audio\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-15",
+      "name": "Save Audio",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3900,
+        0
+      ],
+      "notes": "Project manual node 15: Save Audio. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Whisper\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-16",
+      "name": "Whisper",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4160,
+        0
+      ],
+      "notes": "Project manual node 16: Whisper. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate Captions\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-17",
+      "name": "Generate Captions",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4420,
+        0
+      ],
+      "notes": "Project manual node 17: Generate Captions. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare Video Files\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-18",
+      "name": "Prepare Video Files",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4680,
+        0
+      ],
+      "notes": "Project manual node 18: Prepare Video Files. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// FFmpeg\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-19",
+      "name": "FFmpeg",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4940,
+        0
+      ],
+      "notes": "Project manual node 19: FFmpeg. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// IF - Check Files\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-20",
+      "name": "IF - Check Files",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5200,
+        0
+      ],
+      "notes": "Project manual node 20: IF - Check Files. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Quality Control Agent\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-21",
+      "name": "Quality Control Agent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5460,
+        0
+      ],
+      "notes": "Project manual node 21: Quality Control Agent. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// IF - PASS / FAIL\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-22",
+      "name": "IF - PASS / FAIL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5720,
+        0
+      ],
+      "notes": "Project manual node 22: IF - PASS / FAIL. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// SEO Agent\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-23",
+      "name": "SEO Agent",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5980,
+        0
+      ],
+      "notes": "Project manual node 23: SEO Agent. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Publishing Date & Time\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-24",
+      "name": "Publishing Date & Time",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6240,
+        0
+      ],
+      "notes": "Project manual node 24: Publishing Date & Time. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Wait\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-25",
+      "name": "Wait",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6500,
+        0
+      ],
+      "notes": "Project manual node 25: Wait. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// YouTube Upload\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-26",
+      "name": "YouTube Upload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6760,
+        0
+      ],
+      "notes": "Project manual node 26: YouTube Upload. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// IF - YouTube Upload Successful\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-27",
+      "name": "IF - YouTube Upload Successful",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7020,
+        0
+      ],
+      "notes": "Project manual node 27: IF - YouTube Upload Successful. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Create Instagram Media\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-28",
+      "name": "Create Instagram Media",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7280,
+        0
+      ],
+      "notes": "Project manual node 28: Create Instagram Media. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Wait - Instagram\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-29",
+      "name": "Wait - Instagram",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7540,
+        0
+      ],
+      "notes": "Project manual node 29: Wait - Instagram. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Check Instagram Processing\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-30",
+      "name": "Check Instagram Processing",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7800,
+        0
+      ],
+      "notes": "Project manual node 30: Check Instagram Processing. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// IF - Ready?\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-31",
+      "name": "IF - Ready?",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8060,
+        0
+      ],
+      "notes": "Project manual node 31: IF - Ready?. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Publish Instagram Reel\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-32",
+      "name": "Publish Instagram Reel",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8320,
+        0
+      ],
+      "notes": "Project manual node 32: Publish Instagram Reel. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Merge Results\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-33",
+      "name": "Merge Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8580,
+        0
+      ],
+      "notes": "Project manual node 33: Merge Results. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// IF - Publishing Successful\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-34",
+      "name": "IF - Publishing Successful",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        8840,
+        0
+      ],
+      "notes": "Project manual node 34: IF - Publishing Successful. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gmail - Success Email\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-35",
+      "name": "Gmail - Success Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9100,
+        0
+      ],
+      "notes": "Project manual node 35: Gmail - Success Email. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gmail - Error Email\\n// Configure this node according to the project manual.\\nreturn items;"
+      },
+      "id": "agentic-social-36",
+      "name": "Gmail - Error Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9360,
+        0
+      ],
+      "notes": "Project manual node 36: Gmail - Error Email. Configure this node according to the project manual."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Respond to Webhook placeholder. Configure the final response behavior.\\nreturn items;"
+      },
+      "id": "agentic-social-37",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9620,
+        0
+      ],
+      "notes": "Project manual node 37: Respond to Webhook. Configure this node according to the project manual."
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Planning Agent - Ollama",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Planning Agent - Ollama": {
+      "main": [
+        [
+          {
+            "node": "Code - Parse Planning JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Parse Planning JSON": {
+      "main": [
+        [
+          {
+            "node": "Script Agent - Ollama",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Script Agent - Ollama": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields - Save Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields - Save Script": {
+      "main": [
+        [
+          {
+            "node": "Scene Agent - Ollama",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scene Agent - Ollama": {
+      "main": [
+        [
+          {
+            "node": "Code - Split Scenes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Split Scenes": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Visual Agent - Ollama",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Visual Agent - Ollama": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request - Get Visual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request - Get Visual": {
+      "main": [
+        [
+          {
+            "node": "Download / Save Visual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download / Save Visual": {
+      "main": [
+        [
+          {
+            "node": "Prepare Complete Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Complete Script": {
+      "main": [
+        [
+          {
+            "node": "Text-to-Speech",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text-to-Speech": {
+      "main": [
+        [
+          {
+            "node": "Save Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Audio": {
+      "main": [
+        [
+          {
+            "node": "Whisper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Whisper": {
+      "main": [
+        [
+          {
+            "node": "Generate Captions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Captions": {
+      "main": [
+        [
+          {
+            "node": "Prepare Video Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Video Files": {
+      "main": [
+        [
+          {
+            "node": "FFmpeg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FFmpeg": {
+      "main": [
+        [
+          {
+            "node": "IF - Check Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Check Files": {
+      "main": [
+        [
+          {
+            "node": "Quality Control Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quality Control Agent": {
+      "main": [
+        [
+          {
+            "node": "IF - PASS / FAIL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - PASS / FAIL": {
+      "main": [
+        [
+          {
+            "node": "SEO Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SEO Agent": {
+      "main": [
+        [
+          {
+            "node": "Publishing Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publishing Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "YouTube Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YouTube Upload": {
+      "main": [
+        [
+          {
+            "node": "IF - YouTube Upload Successful",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - YouTube Upload Successful": {
+      "main": [
+        [
+          {
+            "node": "Create Instagram Media",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Instagram Media": {
+      "main": [
+        [
+          {
+            "node": "Wait - Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait - Instagram": {
+      "main": [
+        [
+          {
+            "node": "Check Instagram Processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Instagram Processing": {
+      "main": [
+        [
+          {
+            "node": "IF - Ready?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Ready?": {
+      "main": [
+        [
+          {
+            "node": "Publish Instagram Reel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publish Instagram Reel": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Results": {
+      "main": [
+        [
+          {
+            "node": "IF - Publishing Successful",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Publishing Successful": {
+      "main": [
+        [
+          {
+            "node": "Gmail - Success Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail - Success Email": {
+      "main": [
+        [
+          {
+            "node": "Gmail - Error Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail - Error Email": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "agentic-social-media-blueprint-v1",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
